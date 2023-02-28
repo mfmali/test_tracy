@@ -25,8 +25,8 @@ class QuizController extends Controller
             $quiz = $quiz->where('uid', $request->input('uid'))->first();
         }else if($request->input('page')){
             $perPage=20;
-            if($request->input('pePage')){
-                $perPage=$request->input('pePage');
+            if($request->input('perPage')){
+                $perPage=$request->input('perPage');
             }
             $quiz = $quiz->paginate($perPage);
         }
@@ -104,32 +104,12 @@ class QuizController extends Controller
             $actualNumberOfQuestions = Question::where('quizUid', $request->uid)->count();
             foreach($request->questions as $question){
                 $correct = true;
-                if($question['uid'] && $question['answerId']){
-                    $right = Answer::where('questionUid', $question['uid'])->where('isRight', true)->where('id', $question['answerId'])->first();
-                    if($right){
-                        $rightAnswer++;
-                    }else{
-                        $wrongAnswer++;
-                        $correct = false;
-                    }
-                }else if($question['uid'] && $question['answerUid']){
+                if(array_key_exists("uid",$question) && array_key_exists("answerUid", $question)){
                     $right = Answer::where('questionUid', $question['uid'])->where('isRight', true)->where('uid', $question['answerUid'])->first();
                     if($right){
                         $rightAnswer++;
                     }else{
                         $wrongAnswer++;
-                        $correct = false;
-                    }
-                }else if($question['uid']){
-                    if($question['answerUid'] && $question['answerUid'] == null){
-                        $wrongAnswer++;
-                        $correct = false;
-                    }else if($question['answerId'] && $question['answerId'] == null){
-                        $wrongAnswer++;
-                        $correct = false;
-                    }else{
-                        $message = $message . " No answer feild,";
-                        array_push($errors, '003');
                         $correct = false;
                     }
                 }else{
@@ -153,7 +133,7 @@ class QuizController extends Controller
             "code" => 20000,
             "success" => count($errors)>0?false:true,
             "message"=>$message,
-            "errors" => null,
+            "errors" => count($errors)>0?$errors:NULL,
             "data" =>[
                 "actualNumberOfQuestions" => $actualNumberOfQuestions,
                 "rigthQuantity" => $rightAnswer,

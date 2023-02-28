@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Answer extends Model
 {
     use HasFactory;
-    protected $fillabel = ['questionUid', 'answer', 'isRight'];
+    protected $fillable = ['questionUid', 'answer', 'isRight'];
     protected $hidden = [
         'isRight'
     ];
